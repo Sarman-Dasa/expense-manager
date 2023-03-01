@@ -2,11 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Http\Traits\ResponseTraits;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
 class Handler extends ExceptionHandler
 {
+    use ResponseTraits;
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -47,4 +49,12 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    // public function render($request, Throwable $e)
+    // {
+    //     if($request->is('api/*'))
+    //     {
+    //         return $this->sendFailureResponse("Data Not Found");
+    //     }
+    // }
 }
