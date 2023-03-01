@@ -10,66 +10,49 @@ use Illuminate\Http\Request;
 class AccountUserController extends Controller
 {
     use ResponseTraits;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    //List All Account User//
+    public function list()
     {
         $data = AccountUser::all();
         return $this->sendSuccessResponse(true,"Data Get Successfully",$data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    //Add Account User//
+    public function create(Request $request)
     {
        
         $validation = validator($request->all(),[
-            'first_name'        =>  ['required','alpha'],
-            'last_name'         =>  ['required','alpha'],
-            'email'             =>  ['required','email'],
-            'account_id'        =>  ['required','numeric'],
+            'first_name'        =>  ['required','alpha','max:30','min:3'],
+            'last_name'         =>  ['required','alpha','max:30','min:3'],
+            'email'             =>  ['required','email','unique:account_users,email'],
+            'account_id'        =>  ['required','numeric','exists:accounts,id'],
         ]);
 
         if($validation->fails())
         {
             return $this->sendErrorResponse($validation);
         }
-
-        AccountUser::create($request->all());
+        
+        AccountUser::create($request->only(['first_name','last_name','email','account_id']));
         return $this->sendSuccessResponse(true,"Account user Created Sucessfully");
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(AccountUser $accountUser)
+    //Get Account User//
+    public function get($accountUser)
     {
-        return $accountUser;
-        return $this->sendSuccessResponse(true,"data get Successfully",$accountUser);
+        $data = AccountUser::find($accountUser);
+        if($data)
+            return $this->sendSuccessResponse(true,"data get Successfully",$data);
+        return $this->sendFailureResponse('Data Not Found!!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    //Update Account User//
     public function update(Request $request, AccountUser $accountUser)
     {
         $validation = validator($request->all(),[
-            'first_name'        =>  ['required','alpha'],
-            'last_name'         =>  ['required','alpha'],
+            'first_name'        =>  ['required','alpha','max:30','min:3'],
+            'last_name'         =>  ['required','alpha','max:30','min:3'],
             'email'             =>  ['required','email'],
         ]);
 
@@ -78,19 +61,20 @@ class AccountUserController extends Controller
             return $this->sendErrorResponse($validation);
         }
 
-        $accountUser->update($request->all());
+        //$accountUser->update($request->all());
+        $accountUser->update($request->only(['first_name','last_name','email']));
         return $this->sendSuccessResponse(true,"Your Account Updated Sucessfully.");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(AccountUser $accountUser)
+    //Delete Account User//
+    public function destroy($accountUser)
     {
-       $accountUser->delete();
-       return $this->sendSuccessResponse(true,"Your Account has been Deleted Sucessfully.");
+        $data = AccountUser::findor ($accountUser);
+        if($data){
+            $data->delete();
+            return $this->sendSuccessResponse(true,"Your Account has been Deleted Sucessfully.");
+        }
+        return $this->sendFailureResponse('Data Not Found!!');
+       
     }
 }

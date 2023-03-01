@@ -10,28 +10,20 @@ use Illuminate\Validation\Rules\Enum;
 class TransactionController extends Controller
 {
     use ResponseTraits;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    //List Transaction
+    public function list()
     {
         $data = Transaction::all();
         return $this->sendSuccessResponse(true,"Data Get Successfully",$data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    //Add Transaction Data
+    public function create(Request $request)
     {
         $validation = validator($request->all(),[
             'type'      =>  ['required','alpha','in:income,expense'],
-            'category'  =>  ['required','alpha_dash'],
+            'category'  =>  ['required','alpha_dash','max:30'],
             'amount'    =>  ['required','numeric'],
             'user_id'   =>  ['required','numeric','exists:account_users,id'],
             'account_id'=>  ['required','numeric','exists:accounts,id'],
@@ -42,7 +34,7 @@ class TransactionController extends Controller
             return $this->sendErrorResponse($validation);
         }
 
-        Transaction::create($request->all());
+        Transaction::create($request->only('type','category','amount','user_id','account_id'));
         $msg = "";
         if($request->type == 'income')
             $msg = "money received successfully";
@@ -52,25 +44,12 @@ class TransactionController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Transaction $transction)
+    public function get(Transaction $transaction)
     {
-        return $this->sendSuccessResponse(true,"data get Successfully",$transction);
+        return $this->sendSuccessResponse(true,"data get Successfully",$transaction);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Transaction $transction)
+    public function update(Request $request, Transaction $transaction)
     {
         $validation = validator($request->all(),[
             'type'      =>  ['required','alpha','in:income,expense'],
@@ -85,19 +64,13 @@ class TransactionController extends Controller
             return $this->sendErrorResponse($validation);
         }
 
-        $transction->update($request->all());
+        $transaction->update($request->all());
         return $this->sendSuccessResponse(true,"Your Transaction Updated Sucessfully.");
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Transaction $transction)
+    public function destroy(Transaction $transaction)
     {
-        $transction->delete();
+        $transaction->delete();
         return $this->sendSuccessResponse(true,"transction has been Deleted Sucessfully.");
     }
 }
