@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('account_users', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();
-            $table->string('frist_name');
+            $table->string('first_name');
             $table->string('last_name');
             $table->unsignedBigInteger('account_id');
             $table->timestamps();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade')->onUpdate('cascade');
         });
     }
-
+    
     /**
      * Reverse the migrations.
      *
