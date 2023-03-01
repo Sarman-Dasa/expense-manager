@@ -31,6 +31,7 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('forgotpassword','sendMailForForgotPassword')->name('user.mailVerify');
     Route::post('resetpassword','resetPassword')->name('user.resetpassword');
     Route::post('changepassword','changePassword')->name('user.changepassword')->middleware('auth:sanctum');
+    Route::get('userprofile','userProfile')->name('userProfile')->middleware('auth:sanctum');
 });
 //-----------------------------------------//Account//-----------------------------------------//
 Route::controller(AccountController::class)->group(function(){
