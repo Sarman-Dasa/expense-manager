@@ -165,6 +165,12 @@ class AuthController extends Controller
             'password'  => Hash::make($request->password),
         ]);
         return $this->sendSuccessResponse(true,'Password Chnage Successfully');
+    }
 
+    public function userProfile()
+    {
+        $id     =   Auth::user()->id;
+        $data   =   User::with('accounts')->find($id);
+        return $this->sendSuccessResponse(true,"User Profile Data",$data); 
     }
 }
