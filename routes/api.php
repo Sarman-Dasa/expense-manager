@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountUserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,9 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('registration','register')->name('user.register');
     Route::get('verifyEmail/{token}','accountVerify')->name('user.verify');
     Route::post('login','login')->name('user.login');
+    Route::post('forgotpassword','sendMailForForgotPassword')->name('user.mailVerify');
+    Route::post('resetpassword','resetPassword')->name('user.resetpassword');
+    Route::post('changepassword','changePassword')->name('user.changepassword')->middleware('auth:sanctum');
 });
 //-----------------------------------------//Account//-----------------------------------------//
 Route::controller(AccountController::class)->group(function(){
@@ -37,7 +41,5 @@ Route::controller(AccountController::class)->group(function(){
     Route::get('show/{id}','show')->name('account.show');
 });
 
-
-
-
-// Route::apiResource('my',AccountController::class);
+ Route::apiResource('accountUser',AccountUserController::class)->middleware('auth:sanctum');
+ Route::apiResource('transction',TransactionController::class)->middleware('auth:sanctum');
