@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\User;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AccountController extends Controller
 {
@@ -22,20 +23,20 @@ class AccountController extends Controller
         $data = Account::all();
         return $this->sendSuccessResponse(true,"Data Get Successfully",$data);
     }
-
+    
     public function addAccount(Request $request)
     {
         $validation = validator($request->all(),[
             'account_name'      => ['required'],      
-            'account_number'    => ['required','numeric','digits:12'],
-            'user_id'           => ['required','numeric'],
+            'account_number'    => ['required','numeric','digits:12','unique:accounts'],
+            // 'user_id'           => ['required','numeric'],
         ]);
 
         if($validation->fails())
         {
             return $this->sendErrorResponse($validation);
         } 
-
+        $request['user_id'] = Auth::user()->id;
         $account = Account::create([
             'account_number' => $request->account_number,
             'account_name'  => $request->account_name,
