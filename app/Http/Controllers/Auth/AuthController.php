@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\ResponseTraits;
 use App\Mail\SendWelcomeMail;
 use App\Models\Account;
+use App\Models\PasswordReset;
 use App\Models\User;
+use App\Notifications\resetPasswordMail;
 use App\Notifications\sendVerifyAcccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -82,6 +84,87 @@ class AuthController extends Controller
         {
             return $this->sendFailureResponse("Invalid password!!!");
         }
+    }
+
+    public function sendMailForForgotPassword(Request $request)
+    {
+        $validation = validator($request->all(),[
+            'email'     => ['required','email']
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->sendErrorResponse($validation);
+        }
+
+        $email = $request->email;
+        $user = User::where('email',$email)->first();
+        if($user)
+        {
+            $token = Str::random(64);
+            $data1 = PasswordReset::updateOrCreate(
+            ['email'=>$email],
+            [
+                'email'=>$email,
+                'token'=>$token,
+                'created_at'=>now()
+            ]);
+            $user['token'] = $token;
+           $user->notify(new resetPasswordMail($user));
+           return $this->sendSuccessResponse(true,'Check your mail box!',$token);
+        }
+        else
+        {
+            return $this->sendFailureResponse("Email Address can't match!!! try again");
+        }
+        
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validation = validator($request->all(),[
+            'email'         =>  ['required','email','exists:password_resets,email'],
+            'password'      =>  ['required',Password::min(8),'confirmed'],
+            'token'         =>  ['required','exists:password_resets,token'],
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->sendErrorResponse($validation);
+        }
+
+        $check = PasswordReset::where('email',$request->email)->where('token',$request->token)->get();
+        if(count($check) > 0)
+        {
+            $user = User::where('email',$request->email);
+            $user->update([
+                'password' => Hash::make($request->password)
+            ]);
+            return $this->sendSuccessResponse(true,'password reset successfully.');
+        }
+        else{
+            return $this->sendFailureResponse("This password reset token is invalid");
+        }
+    }
+
+    public function changePassword(Request $request){
+        
+        $validation = validator($request->all(),[
+            'current_password'  =>  ['required','current_password'],
+            'password'          =>  ['required',Password::min(8),'confirmed'],
+        ]);
+
+        if($validation->fails())
+        {
+            return $this->sendErrorResponse($validation);
+        }
+
+        $id = Auth::user()->id;
+        $user = User::find($id);
+        $user->update([
+            'password'  => Hash::make($request->password),
+        ]);
+        return $this->sendSuccessResponse(true,'Password Chnage Successfully');
 
     }
 }
