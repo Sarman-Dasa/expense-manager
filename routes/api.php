@@ -28,6 +28,7 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('login','login')->name('user.login');
     Route::post('forgotpassword','sendMailForForgotPassword')->name('user.mailVerify');
     Route::post('resetpassword','resetPassword')->name('user.resetpassword');
+    
    
 });
 
