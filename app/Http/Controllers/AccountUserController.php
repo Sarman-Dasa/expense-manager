@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Traits\ResponseTraits;
 use App\Models\Account;
 use App\Models\AccountUser;
+use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 
 class AccountUserController extends Controller
@@ -14,18 +16,15 @@ class AccountUserController extends Controller
     //List All Account User//
     public function list()
     {
-        $data = AccountUser::all();
-        return $this->sendSuccessResponse(true,"Data Get Successfully",$data);
+        $AccountUserList = AccountUser::all();
+        return $this->sendSuccessResponse(true,"Data Get Successfully",$AccountUserList);
     }
 
     //Add Account User//
     public function create(Request $request)
     {
-       
         $validation = validator($request->all(),[
-            'first_name'        =>  ['required','alpha','max:30','min:3'],
-            'last_name'         =>  ['required','alpha','max:30','min:3'],
-            'email'             =>  ['required','email','unique:account_users,email'],
+            'email'             =>  ['required','email','exists:users,email','unique:account_users,email'],
             'account_id'        =>  ['required','numeric','exists:accounts,id'],
         ]);
 
@@ -34,21 +33,31 @@ class AccountUserController extends Controller
             return $this->sendErrorResponse($validation);
         }
         
-        AccountUser::create($request->only(['first_name','last_name','email','account_id']));
-        return $this->sendSuccessResponse(true,"Account user Created Sucessfully");
+        $user = User::where('email',$request->email)->first();
+        if($user){
+            AccountUser::create($user->only(['first_name','last_name'])
+            +$request->only(['email','account_id']));
+            return $this->sendSuccessResponse(true,"Account user Created Sucessfully");
+        }
+        else
+        {
+            return $this->sendFailureResponse('User Not Found!!!');
+        }
     }
 
     //Get Account User//
     public function get($accountUser)
     {
-        $data = AccountUser::find($accountUser);
-        if($data)
-            return $this->sendSuccessResponse(true,"data get Successfully",$data);
-        return $this->sendFailureResponse('Data Not Found!!');
+        try{
+            $AccountUserData = AccountUser::findOrFail($accountUser);
+            return $this->sendSuccessResponse(true,"data get Successfully",$AccountUserData);
+        }catch(Exception $ex){
+            return $this->sendFailureResponse('Data Not Found!!!');
+        }
     }
 
     //Update Account User//
-    public function update(Request $request, AccountUser $accountUser)
+    public function update(Request $request, $accountUser)
     {
         $validation = validator($request->all(),[
             'first_name'        =>  ['required','alpha','max:30','min:3'],
@@ -60,21 +69,25 @@ class AccountUserController extends Controller
         {
             return $this->sendErrorResponse($validation);
         }
-
-        //$accountUser->update($request->all());
-        $accountUser->update($request->only(['first_name','last_name','email']));
-        return $this->sendSuccessResponse(true,"Your Account Updated Sucessfully.");
+        $AccountUserData = AccountUser::find($accountUser);
+        if($AccountUserData){
+            $AccountUserData->update($request->only(['first_name','last_name','email']));
+            return $this->sendSuccessResponse(true,"Your Account Updated Sucessfully.");
+        }
+        else{
+            return $this->sendFailureResponse('Account User Not Found!!!');
+        }
     }
 
     //Delete Account User//
     public function destroy($accountUser)
     {
-        $data = AccountUser::findor ($accountUser);
-        if($data){
-            $data->delete();
+        try{
+            $AccountUserData = AccountUser::findOrFail($accountUser);
+            $AccountUserData->delete();
             return $this->sendSuccessResponse(true,"Your Account has been Deleted Sucessfully.");
+        }catch(Exception $ex){
+            return $this->sendFailureResponse('Data Not Found!!!');
         }
-        return $this->sendFailureResponse('Data Not Found!!');
-       
     }
 }
