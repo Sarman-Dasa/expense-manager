@@ -28,48 +28,48 @@ Route::controller(AuthController::class)->group(function(){
     Route::post('login','login')->name('user.login');
     Route::post('forgotpassword','sendMailForForgotPassword')->name('user.mailVerify');
     Route::post('resetpassword','resetPassword')->name('user.resetpassword');
-    Route::post('changepassword','changePassword')->name('user.changepassword')->middleware('auth:sanctum');
-    Route::get('userprofile','userProfile')->name('userProfile')->middleware('auth:sanctum');
+   
 });
 
 
 
 Route::middleware(['auth:sanctum'])->group(function(){
     
+    //User Profile & changePassword
+    Route::controller(AuthController::class)->prefix('user')->group(function(){
+        Route::post('changepassword','changePassword')->name('user.changepassword');
+        Route::get('userprofile/{id}','userProfile')->name('userProfile');
+        Route::get('list-of-transactions/{id}', 'listOfTransactions')->name('user.listOfTransactions');
+        Route::get('list-of-account/{id}','listOfAccount')->name('user.listOfAccount');
+        Route::get('list-of-account-users/{id}','listOfAccountUser')->name('user.listOfAccountUser');
+    });
+
     //Account//
-    Route::prefix('account')->group(function () {
-        Route::controller(AccountController::class)->group(function(){
-            Route::post('create','create')->name('accound.add');
-            Route::patch('update/{id}','update')->name('account.update');
-            Route::delete('delete/{id}','destroy')->name('account.delete');
-            Route::get('list','list')->name('account.index');
-            Route::get('get/{id}','get')->name('account.show');
-        });
+    Route::controller(AccountController::class)->prefix('account')->group(function(){
+        Route::post('create','create')->name('accound.add');
+        Route::patch('update/{id}','update')->name('account.update');
+        Route::delete('delete/{id}','destroy')->name('account.delete');
+        Route::get('list','list')->name('account.index');
+        Route::get('get/{id}','get')->name('account.show');
+        Route::get('list-of-transactions/{id}', 'listOfTransactions')->name('account.listOfTransactions');
     });
 
     //Account-User//
-    Route::prefix('accountUser')->group(function () {
-        Route::controller(AccountUserController::class)->group(function(){
-            Route::get('list','list')->name('accountUser.list');
-            Route::post('create','create')->name('accountUser.create');
-            Route::patch('update/{accountUser}','update')->name('accountUser.update');
-            Route::get('get/{accountUser}','get')->name('accountUser.get');
-            Route::delete('delete/{accountUser}','destroy')->name('accountUser.delete');
-        });
+    Route::controller(AccountUserController::class)->prefix('accountUser')->group(function(){
+        Route::get('list','list')->name('accountUser.list');
+        Route::post('create','create')->name('accountUser.create');
+        Route::patch('update/{id}','update')->name('accountUser.update');
+        Route::get('get/{accountUser}','get')->name('accountUser.get');
+        Route::delete('delete/{accountUser}','destroy')->name('accountUser.delete');
     });
-   
+
     //Transaction//
-    Route::prefix('transaction')->group(function () {
-        Route::controller(TransactionController::class)->group(function(){
-            Route::get('list','list')->name('transaction.list');
-            Route::post('create','create')->name('transaction.create');
-            Route::patch('update/{transaction}','update')->name('transaction.update');
-            Route::get('get/{transaction}','get')->name('transaction.get');
-            Route::delete('delete/{transaction}','destroy')->name('transaction.delete');
-        });
+    Route::controller(TransactionController::class)->prefix('transaction')->group(function(){
+        Route::get('list','list')->name('transaction.list');
+        Route::post('create','create')->name('transaction.create');
+        Route::patch('update/{transaction}','update')->name('transaction.update');
+        Route::get('get/{transaction}','get')->name('transaction.get');
+        Route::delete('delete/{transaction}','destroy')->name('transaction.delete');
     });
+
 });
-
-
- //Route::apiResource('accountUser',AccountUserController::class)->middleware('auth:sanctum');
- //Route::apiResource('transction',TransactionController::class)->middleware('auth:sanctum');
