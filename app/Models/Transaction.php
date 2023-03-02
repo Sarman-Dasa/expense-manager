@@ -13,7 +13,19 @@ class Transaction extends Model
         'type',
         'category',
         'amount',
-        'user_id',
+        'account_user_id',
         'account_id'
     ];
+
+    //Transaction and AccountUser Relationship
+    public function accountUser()
+    {
+        return $this->belongsTo(AccountUser::class);
+    }
+
+    //transacation and Account Relationship
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
 }
