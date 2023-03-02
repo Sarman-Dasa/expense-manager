@@ -6,6 +6,7 @@ use App\Http\Traits\ResponseTraits;
 use App\Models\Account;
 use App\Models\User;
 use Dflydev\DotAccessData\Data;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,60 +17,87 @@ class AccountController extends Controller
     //List All Account//
     public function list()
     {
-        $data = Account::all();
-        return $this->sendSuccessResponse(true,"Data Get Successfully",$data);
+        $accountList = Account::all();
+        return $this->sendSuccessResponse(true,"Data Get Successfully",$accountList);
     }
     
     //Add Account Data
     public function create(Request $request)
     {
         $validation = validator($request->all(),[
-            'account_name'      => ['required'],      
-            'account_number'    => ['required' ,'numeric' ,'digits:12' ,'unique:accounts'],
+            'account_name'      => ['required' ,'max:100'],      
+            'account_number'    => ['required' ,'numeric' ,'min_digits:10' ,'max_digits:12' ,'unique:accounts,account_number'],
         ]);
 
         if($validation->fails())
         {
             return $this->sendErrorResponse($validation);
         } 
-
-        $request['user_id'] = Auth::user()->id;
-        $account = Account::create($request->only(['account_name' ,'account_number' ,'user_id']));
-        return $this->sendSuccessResponse(true," Your Account Created Suucessfully.",$account);
+        
+        $userId =   auth::user()->id;
+        $account = Account::create($request->only(['account_name' ,'account_number'])
+        +[
+            'user_id'   =>  $userId,
+        ]);
+        return $this->sendSuccessResponse(true,"Your Account Created Suucessfully.",$account);
     }
 
     //Update Account Data//
-    public function update(Request $request,Account $id)
+    public function update(Request $request,$id)
     {
         $validation = validator($request->all(),[
-            'account_name'      => ['required'],      
-            'account_number'    => ['required' ,'numeric' ,'digits:12'],
+            'account_name'      => ['required' ,'max:100'],      
+            'account_number'    => ['required' ,'numeric' ,'min_digits:10' ,'max_digits:12'],
         ]);
        
         if($validation->fails())
         {
             return $this->sendErrorResponse($validation);
         } 
-
-        $id->update($request->all());
-        return $this->sendSuccessResponse(true ,"Your Account Updated Suucessfully." ,$id);
+        $accountData = Account::find($id);
+        if($accountData)
+        {
+            $accountData->update($request->only(['account_name' ,'account_number']));
+            return $this->sendSuccessResponse(true ,"Your Account Updated Suucessfully." ,$id);
+        }
+        else
+        {
+            return $this->sendFailureResponse("User Not Found!!!");
+        }
     }
 
     //Delete Account Data//
     public function destroy($id)
     {
-        $data = Account::find($id);
-        if($data){
-            $data->delete();
-            return $this->sendSuccessResponse(true ,"Your Account has been Deleted Suucessfully.");
+        try{
+            $accountData = Account::findOrFail($id);
+            $accountData->delete();
+            return $this->sendSuccessResponse(true,"Your Account has been Deleted Sucessfully.");
+        }catch(Exception $ex){
+            return $this->sendFailureResponse('Data Not Found!!!');
         }
-        return $this->sendFailureResponse('Data Not Found!!!');
     }
 
     //Get Account Data//
-    public function get(Account $id)
+    public function get($id)
     {
-        return $this->sendSuccessResponse(true ,"data get Successfully" ,$id);
+        try{
+            $accountData = Account::findOrFail($id);
+            return $this->sendSuccessResponse(true,"data get Successfully",$accountData);
+        }catch(Exception $ex){
+            return $this->sendFailureResponse('Data Not Found!!!');
+        }
+    }
+
+    //get all Transaction 
+    public function listOfTransactions($id)
+    {
+        try{
+            $listOfTransactions = Account::with('transactions')->latest()->findOrFail($id);
+            return $this->sendSuccessResponse(true,"Account Transaction(s) get Successfully",$listOfTransactions->transactions);
+        }catch(Exception $ex){
+            return $this->sendExecptionMessage($ex);
+        }
     }
 
 
