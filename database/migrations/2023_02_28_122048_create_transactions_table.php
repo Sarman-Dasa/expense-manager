@@ -16,13 +16,13 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->enum('type',['income','expense']);
-            $table->string('category');
+            $table->string('category',30);
             $table->integer('amount');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('account_user_id');
             $table->unsignedBigInteger('account_id');
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('user_id')->references('id')->on('account_users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('account_user_id')->references('id')->on('account_users')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade')->onUpdate('cascade');
         });
     }
