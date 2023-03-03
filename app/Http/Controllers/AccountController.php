@@ -15,15 +15,13 @@ class AccountController extends Controller
     use ResponseTraits;
 
     //List All Account//
-    public function list()
-    {
+    public function list(){
         $accountList = Account::all();
         return $this->sendSuccessResponse(true,"Data Get Successfully",$accountList);
     }
     
     //Add Account Data
-    public function create(Request $request)
-    {
+    public function create(Request $request){
         $validation = validator($request->all(),[
             'account_name'      => ['required' ,'max:100'],      
             'account_number'    => ['required' ,'numeric' ,'min_digits:10' ,'max_digits:12' ,'unique:accounts,account_number'],
@@ -43,8 +41,7 @@ class AccountController extends Controller
     }
 
     //Update Account Data//
-    public function update(Request $request,$id)
-    {
+    public function update(Request $request,$id){
         $validation = validator($request->all(),[
             'account_name'      => ['required' ,'max:100'],      
             'account_number'    => ['required' ,'numeric' ,'min_digits:10' ,'max_digits:12'],
@@ -65,10 +62,20 @@ class AccountController extends Controller
             return $this->sendFailureResponse("User Not Found!!!");
         }
     }
+    
+    //Get Account Data//
+    public function get($id){
+        try{
+            $account = Account::findOrFail($id);
+            $account->load(['accountUsers','transactions']);
+            return $this->sendSuccessResponse(true,"data get Successfully",$account);
+        }catch(Exception $ex){
+            return $this->sendExecptionMessage($ex);
+        }
+    }
 
     //Delete Account Data//
-    public function destroy($id)
-    {
+    public function destroy($id){
         try{
             $accountData = Account::findOrFail($id);
             $accountData->delete();
@@ -77,26 +84,28 @@ class AccountController extends Controller
             return $this->sendFailureResponse('Data Not Found!!!');
         }
     }
-
-    //Get Account Data//
-    public function get($id)
-    {
+    
+    //get all Transaction 
+    public function listOfTransactions($id){
         try{
-            $accountData = Account::findOrFail($id);
-            return $this->sendSuccessResponse(true,"data get Successfully",$accountData);
+            $listOfTransactions = Account::with('transactions')->latest()->findOrFail($id);
+            return $this->sendSuccessResponse(true,"Account Transaction(s) get Successfully",$listOfTransactions);
         }catch(Exception $ex){
-            return $this->sendFailureResponse('Data Not Found!!!');
+            return $this->sendExecptionMessage($ex);
         }
     }
 
-    //get all Transaction 
-    public function listOfTransactions($id)
-    {
-        try{
-            $listOfTransactions = Account::with('transactions')->latest()->findOrFail($id);
-            return $this->sendSuccessResponse(true,"Account Transaction(s) get Successfully",$listOfTransactions->transactions);
-        }catch(Exception $ex){
-            return $this->sendExecptionMessage($ex);
+    //get All user Account related to account
+    public function listOfAccountUser($id){
+        $listOfAccountUser  = Account::with('accountUsers')->find($id);
+        dd($listOfAccountUser);
+        if($listOfAccountUser)
+        {
+            return $this->sendSuccessResponse(true,"User Account Get Successfully",$listOfAccountUser);
+        }
+        else
+        {
+            return $this->sendFailureResponse("User Not Found!!!");
         }
     }
 
