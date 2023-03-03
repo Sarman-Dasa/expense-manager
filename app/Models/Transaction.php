@@ -26,6 +26,11 @@ class Transaction extends Model
     //transacation and Account Relationship
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class,'account_id');
+    }
+
+    public function user()
+    {
+        return $this->hasOneThrough(User::class,Account::class,'user_id','id');
     }
 }
