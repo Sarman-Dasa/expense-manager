@@ -25,7 +25,7 @@ class Account extends Model
     //Account and AccountUser Relationship
     public function accountUsers()
     {
-        return $this->hasMany(AccountUser::class,'account_user_id','id');
+        return $this->hasMany(AccountUser::class,'account_id','id');
     }
 
     //Account and Transanction Relationship
