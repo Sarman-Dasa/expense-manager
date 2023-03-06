@@ -25,6 +25,8 @@ class User extends Authenticatable
         'is_onborded',
         'password',
         'email_verify_token',
+        'email_verified_at',
+        'role',
     ];
 
     /**
@@ -62,5 +64,24 @@ class User extends Authenticatable
     public function transactions()
     {
         return $this->hasManyThrough(Transaction::class,Account::class,'user_id','account_id');
+    }
+
+    //User School
+
+    public function schools()
+    {
+        return $this->hasMany(School::class,'user_id','id');
+    }
+
+    //User and Teacher Relationship
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class,'created_by','id');
+    }
+
+    //Teacher Profile
+    public function teacherProfile()
+    {
+        return $this->hasOne(Teacher::class,'user_id','id');
     }
 }
