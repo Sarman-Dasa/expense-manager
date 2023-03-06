@@ -3,6 +3,8 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountUserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Models\Transaction;
@@ -76,4 +78,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('get-account-user/{id}', 'getAccountUser')->name('transaction.getAccountUser');
         Route::get('get-account/{id}', 'getAccount')->name('transaction.getAccount');
     });
+
+    //school//
+    Route::controller(SchoolController::class)->middleware(['admin'])->prefix('school')->group(function(){
+        Route::get('list','list')->name('school.list');
+        Route::post('create','create')->name('school.create');
+    });
+
+    Route::controller(TeacherController::class)->middleware(['admin'])->prefix('teacher')->group(function(){
+        Route::get('list','list')->name('teacher.list');
+        Route::post('create','create')->name('teacher.create');
+      
+    });
+    Route::controller(TeacherController::class)->middleware('teacher')->prefix('teacher')->group(function(){
+        Route::get('get','get')->name('teacher.get');
+    });
+
 });
