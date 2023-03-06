@@ -10,6 +10,7 @@ use App\Models\PasswordReset;
 use App\Models\User;
 use App\Notifications\resetPasswordMail;
 use App\Notifications\sendVerifyAcccount;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,6 +32,7 @@ class AuthController extends Controller
             'password'          =>  'required|min:8|confirmed',
             'account_name'      =>  'required|string|max:100',
             'account_number'    =>  'required|min_digits:10|max_digits:12|unique:accounts,account_number',
+            'gender'            =>  'required|in:Male,Female',
         ]);
 
         if($validation->fails())
@@ -60,8 +62,8 @@ class AuthController extends Controller
         if($user){
             $user->update([
                 'is_onborded'           =>  true,
-                'email_verified_at'     =>  now(),
-                'email_verify_token'    =>  null,    
+                'email_verified_at'     =>  Carbon::now(),
+                'email_verify_token'    =>  null,
             ]);
             return response("your Account Verify Successfull");
         }
