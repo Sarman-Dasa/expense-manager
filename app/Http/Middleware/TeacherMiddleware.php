@@ -18,9 +18,9 @@ class TeacherMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if(auth()->user()->role == 'Teacher')
+        if(auth()->user()->role == 'Teacher' || auth()->user()->role == 'Admin')
         {
-             return $next($request);
+            return $next($request);
         }
         return $this->sendFailureResponse('You are not eligible!!!');
        
