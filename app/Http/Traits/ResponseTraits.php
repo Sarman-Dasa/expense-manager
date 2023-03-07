@@ -11,10 +11,12 @@
         {
             return response()->json(['status'=>$status,'message'=>$message,'data'=>$data],200);
         }
+
         public function sendFailureResponse($message)
         {
             return response()->json(['status'=>false,'message'=>$message],401);
         }
+
         public function sendExecptionMessage($ex)
         {
             $boolean = Str::contains($ex->getMessage(), 'Duplicate entry');
@@ -27,6 +29,12 @@
                 return response()->json(['status'=>false,'message'=>$ex->getMessage()],500);
            }
         }
+
+        public function dataNotFound($message)
+        {
+            return response()->json(['status'=>false,'message'=>$message],404);
+        }
+
     }
 
 
