@@ -3,7 +3,9 @@
 namespace App\Exceptions;
 
 use App\Http\Traits\ResponseTraits;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -50,11 +52,15 @@ class Handler extends ExceptionHandler
         });
     }
 
-    // public function render($request, Throwable $e)
-    // {
-    //     if($request->is('api/*'))
-    //     {
-    //         return $this->sendFailureResponse("Data Not Found");
-    //     }
-    // }
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof ModelNotFoundException) {
+            return $this->dataNotFound('Data Not Found on id :'.substr( $e->getMessage(),-2));
+        }
+
+        else if($e instanceof RouteNotFoundException)
+        {
+            return $this->sendFailureResponse("Authantication error");
+        }
+    }
 }
