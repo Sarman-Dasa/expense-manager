@@ -29,4 +29,10 @@ class Teacher extends Model
     {
         return $this->belongsToMany(School::class,'school_teachers');
     }
+
+    //Teacher student relation
+    public function students()
+    {
+        return $this->belongsToMany(Student::class,'teacher_students');
+    }
 }
