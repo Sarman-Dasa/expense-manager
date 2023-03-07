@@ -24,9 +24,16 @@ class School extends Model
     {
         return $this->belongsTo(User::class,'user_id','id');
     }
+    
     //school teacher relation 
     public function teachers()
     {
         return $this->belongsToMany(Teacher::class,'school_teachers');
+    }
+
+    //school and student relation
+    public function students()
+    {
+        return $this->hasMany(Student::class,'school_id','id');
     }
 }
