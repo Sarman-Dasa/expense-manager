@@ -4,9 +4,11 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountUserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SchoolController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Models\Student;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -79,12 +81,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('get-account/{id}', 'getAccount')->name('transaction.getAccount');
     });
 
+
     //school//
     Route::controller(SchoolController::class)->middleware(['admin'])->prefix('school')->group(function(){
         Route::get('list','list')->name('school.list');
         Route::post('create','create')->name('school.create');
+        Route::patch('update/{id}','update')->name('school.update');
+        Route::get('get/{id}','get')->name('school.get');
+        Route::delete('delete/{id}','destroy')->name('school.delete');
     });
 
+    //teachear
     Route::controller(TeacherController::class)->middleware(['admin'])->prefix('teacher')->group(function(){
         Route::get('list','list')->name('teacher.list');
         Route::post('create','create')->name('teacher.create');
@@ -92,6 +99,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
     Route::controller(TeacherController::class)->middleware('teacher')->prefix('teacher')->group(function(){
         Route::get('get','get')->name('teacher.get');
+        Route::Patch('update/{id?}','update')->name('teacher.update');
+        Route::delete('delete/{id}','destroy')->name('teacher.delete');
     });
 
+
+    // //student
+    // Route::controller(StudentController::class)->middleware('teacher')->prefix('student')->group(function(){
+    //     Route::get('list','list')->name('student.list');
+    //     Route::post('create','create')->name('student.create');
+    // });
+
+    Route::controller(StudentController::class)->prefix('student')->group(function(){
+        Route::middleware(['teacher'])->group(function(){
+            Route::get('list','list')->name('student.list');
+            Route::post('create','create')->name('student.create');
+        });
+       Route::get('get','get')->name('student.get');
+    });
 });
