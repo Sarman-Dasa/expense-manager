@@ -24,6 +24,7 @@ class User extends Authenticatable
         'phone',
         'is_onborded',
         'password',
+        'role',
         'email_verify_token',
         'email_verified_at',
         'email_verified_at',
@@ -84,4 +85,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Teacher::class,'user_id','id');
     }
+
+    //Student profile
+    public function studentProfile()
+     {
+         return $this->hasOne(User::class,'user_id','id');
+     }
 }
