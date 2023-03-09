@@ -5,6 +5,7 @@ use App\Http\Controllers\AccountUserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
@@ -52,7 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     //Account//
     Route::controller(AccountController::class)->prefix('account')->group(function () {
         Route::get('list', 'list')->name('account.index');
-        Route::post('create', 'create')->name('accound.add');
+        Route::post('create', 'create')->name('account.add');
         Route::patch('update/{id}', 'update')->name('account.update');
         Route::get('get/{id}', 'get')->name('account.show');
         Route::delete('delete/{id}', 'destroy')->name('account.delete');
@@ -115,6 +116,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
             Route::get('list','list')->name('student.list');
             Route::post('create','create')->name('student.create');
         });
-       Route::get('get','get')->name('student.get');
+        Route::Patch('update/{id?}','update')->name('student.update');
+        Route::get('get','get')->name('student.get');
+        Route::delete('delete/{id}','destroy')->name('student.delete');
     });
+
+    //subject
+    Route::controller(SubjectController::class)->prefix('subject')->group(function(){
+        Route::middleware(['admin'])->group(function(){
+            Route::post('create', 'create')->name('subject.add');
+            Route::patch('update/{id}', 'update')->name('subject.update');
+            Route::delete('delete/{id}', 'destroy')->name('subject.delete');
+        });
+
+        Route::get('list', 'list')->name('subject.index');
+        Route::get('get/{id}', 'get')->name('subject.show');
+    });
+    
 });
