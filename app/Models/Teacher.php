@@ -19,7 +19,7 @@ class Teacher extends Model
     ];
 
     //teacher Profile
-    public function teacherProfile()
+    public function user()
     {
         return $this->belongsTo(User::class,'user_id');
     }
@@ -34,5 +34,11 @@ class Teacher extends Model
     public function students()
     {
         return $this->belongsToMany(Student::class,'teacher_students');
+    }
+
+    //Teacher and Subject relation
+    public function subjects()
+    {
+       return $this->morphToMany(Subject::class,'courseable');
     }
 }
