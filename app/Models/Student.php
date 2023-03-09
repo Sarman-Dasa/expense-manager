@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     use HasFactory;
-   
     protected $fillable =[
         'city',
         'birth_date',
@@ -27,7 +26,7 @@ class Student extends Model
     }
 
     //Student Profile
-     public function studentProfile()
+     public function user()
      {
          return $this->belongsTo(User::class,'user_id');
      }
@@ -36,5 +35,11 @@ class Student extends Model
      //Student and school relation 
      public function school(){
         return $this->belongsTo(School::class,'school_id','id');
+     }
+
+     //Student and Subject relation
+     public function subjects()
+     {
+        return $this->morphToMany(Subject::class,'courseable');
      }
 }
