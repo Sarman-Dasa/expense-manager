@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountUserController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
@@ -131,6 +132,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::get('list', 'list')->name('subject.index');
         Route::get('get/{id}', 'get')->name('subject.show');
-    });
-    
+    });    
+});
+
+Route::controller(EmployeeController::class)->prefix('employee')->group(function()
+{
+    Route::get('list','list')->name('employee.list');
+    Route::get('get/{query}/{value}','get')->name('employee.get');
 });
