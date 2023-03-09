@@ -81,13 +81,13 @@ class User extends Authenticatable
     }
 
     //Teacher Profile
-    public function teacherProfile()
+    public function teacher()
     {
         return $this->hasOne(Teacher::class,'user_id','id');
     }
 
     //Student profile
-    public function studentProfile()
+    public function user()
      {
          return $this->hasOne(User::class,'user_id','id');
      }
