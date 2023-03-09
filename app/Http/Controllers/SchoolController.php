@@ -67,13 +67,13 @@ class SchoolController extends Controller
 
     public function get($id)
     {
-        $school = School::findOrFail($id)->first();
+        $school = School::findOrFail($id);
         return $this->sendSuccessResponse(true,'School data get successfully.',$school);
     }
 
     public function destroy($id)
     {
-        $school = School::findOrFail($id)->first();
+        $school = School::findOrFail($id);
         $school->delete();
         return $this->sendSuccessResponse(true,'School deleted successfully...');
     }
