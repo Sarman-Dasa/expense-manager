@@ -53,20 +53,20 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $e)
-    {
-        if ($e instanceof ModelNotFoundException) {
-            return $this->dataNotFound('Data Not Found on id :'.substr( $e->getMessage(),-2));
-        }
+    // public function render($request, Throwable $e)
+    // {
+    //     if ($e instanceof ModelNotFoundException) {
+    //         return $this->dataNotFound('Data Not Found on id :'.substr( $e->getMessage(),-2));
+    //     }
 
-        else if($e instanceof RouteNotFoundException)
-        {
-            return $this->sendFailureResponse("Authantication error");
-        }
-        $boolean = Str::contains($e->getMessage(), 'Duplicate entry');
-        if($boolean)
-        {
-            return response()->json(['status'=>false,'message'=>"Data Duplicate Error"],500);
-        }
-    }
+    //     else if($e instanceof RouteNotFoundException)
+    //     {
+    //         return $this->sendFailureResponse("Authantication error");
+    //     }
+    //     $boolean = Str::contains($e->getMessage(), 'Duplicate entry');
+    //     if($boolean)
+    //     {
+    //         return response()->json(['status'=>false,'message'=>"Data Duplicate Error"],500);
+    //     }
+    // }
 }
