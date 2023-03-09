@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Http\Traits\ResponseTraits;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
@@ -61,6 +62,11 @@ class Handler extends ExceptionHandler
         else if($e instanceof RouteNotFoundException)
         {
             return $this->sendFailureResponse("Authantication error");
+        }
+        $boolean = Str::contains($e->getMessage(), 'Duplicate entry');
+        if($boolean)
+        {
+            return response()->json(['status'=>false,'message'=>"Data Duplicate Error"],500);
         }
     }
 }
