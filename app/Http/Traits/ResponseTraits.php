@@ -35,6 +35,43 @@
             return response()->json(['status'=>false,'message'=>$message],404);
         }
 
+        public function sendFilterListData($query, $searching_Fields)
+        {  
+            if(request()->search){
+                // $query->where('name','like',request()->search.'%')
+                // ->orWhere('email','like',request()->search)
+                // ->orWhere('mobile_number','like',request()->search)
+                // ->orWhere('department_name','like',request()->search)
+                // ->orWhere('hiredate','like',request()->search)
+                // ->orWhere('city','like',request()->search)
+                // ->orWhere('gender','like',request()->search)
+                // ->orWhere('salary','like',request()->search);
+                
+                $search = request()->search;
+                $query = $query->where(function($query) use($search ,$searching_Fields){
+                    foreach ($searching_Fields as $searching_Field) {
+                         $query->orWhere($searching_Field,'like',$search.'%');  
+                    }
+                });
+            }
+
+            if(request()->sort)
+            {
+                $sortOrder = request()->sortOrder == 'desc' ? 'desc': 'asc';
+                $query->orderBy(request()->sort,$sortOrder);
+            }
+
+            if(request()->salary)
+            {
+                $query->where('salary','<=',request()->salary);
+            }
+
+            $pagination = request()->perPageData ?? 10;
+            $list = $query->paginate($pagination);
+            //$col = $query->getTableColumns();
+            return response()->json(['status'=>true,'message'=>'Data get successfully.','data'=>$list],200);
+        }
+
     }
 
 
