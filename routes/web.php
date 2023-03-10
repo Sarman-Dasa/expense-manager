@@ -20,5 +20,6 @@ Route::get('/', function () {
 
 Route::controller(EmployeeController::class)->prefix('employee')->group(function()
 {
-    Route::get('list','list')->name('employee.list');
+    Route::get('webList','webList')->name('employee.list');
+    Route::get('get/{query}/{value?}','sort')->name('employee.get');
 });
