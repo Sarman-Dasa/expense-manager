@@ -137,6 +137,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::controller(EmployeeController::class)->prefix('employee')->group(function()
 {
-    Route::get('list','list')->name('employee.list');
-    Route::get('get/{query}/{value}','get')->name('employee.get');
+    Route::post('list','list')->name('employee.list');
 });
