@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Traits\ResponseTraits;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
@@ -12,9 +13,22 @@ class EmployeeController extends Controller
 
     public function list(Request $request)
     {
+        $validation =  Validator::make($request->all(),[
+            'page'          =>  'nullable|numeric',
+            'perPageData'   =>  'nullable|numeric',
+            'sort'          =>  'nullable|alpha_dash',
+            'sortOrder'     =>  'nullable|in:desc,asc',
+            'salary'        =>  'nullable|numeric',
+        ]);
+
+        if($validation->fails())
+            return $this->sendErrorResponse($validation);
+            
         $query = Employee::query();
         $searching_Fields = ['name','email','mobile_number','department_name'];
         return $this->sendFilterListData($query, $searching_Fields);
+    
+        
     /*    
         if($request->search){
             $query->where('name','like',$request->search.'%')
