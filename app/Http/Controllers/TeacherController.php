@@ -54,9 +54,14 @@ class TeacherController extends Controller
             return $this->sendErrorResponse($validation);
         } 
         
-        $user = auth()->user();
-        $schoolsId = School::where('user_id','=',$user->id)->pluck('user_id')->toArray();
-        $id = School::where('id',$request->school_id)->whereIn('user_id',$schoolsId)->first();
+        $user   = auth()->user();
+        $query  = School::query();
+
+        // $schoolsId = School::where('user_id','=',$user->id)->pluck('user_id')->toArray();
+        // $id = School::where('id',$request->school_id)->whereIn('user_id',$schoolsId)->first();
+
+        $schoolsId  = $query->where('user_id','=',$user->id)->pluck('user_id')->toArray();
+        $id         = $query->where('id','=',$request->school_id)->whereIn('user_id',$schoolsId)->first('id');
 
         if($id){
             $teacheruser = User::create($request->only(['first_name' ,'last_name' ,'email' ,'phone'])
